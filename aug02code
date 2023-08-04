@@ -1,0 +1,23 @@
+mount_name = "ganeshaws_s3"
+
+file_name="iris.csv"
+
+df = spark.read.format("csv").load("/mnt/%s/%s" % (mount_name , file_name))
+
+df.show()
+
+
+#Mount bucket on databricks
+
+encoded_secret_key = secret_key.replace("/", "%2F")
+
+aws_bucket_name = "bkt-ganesh-04aug/tmp"
+
+mount_name = "ganeshaws_s3"
+
+dbutils.fs.mount("s3a://%s:%s@%s" % (access_key, encoded_secret_key, aws_bucket_name), "/mnt/%s" % mount_name)
+
+display(dbutils.fs.ls("/mnt/%s" % mount_name))
+
+strMountPointParquetFile="/mnt/%s/abc.parquet" % (mount_name)
+df.write.parquet(strMountPointParquetFile)
